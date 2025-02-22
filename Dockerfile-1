@@ -1,0 +1,28 @@
+# create multistage dockerfile
+# method not recommended because of ./gradlew which downloads each time gradle
+############################################################################################################
+# stage 1
+############################################################################################################
+# build the app
+# create gradle wrapper
+FROM eclipse-temurin:17-jdk-alpine-3.21 as build
+COPY . /app
+WORKDIR /app
+RUN chmod +x gradlew
+# run the test
+RUN ./gradlew test --info  # For more detailed logs
+# build the app: no tests are run because we have already run the tests in the previous stage
+RUN ./gradlew build -x test
+############################################################################################################
+# stage 2
+############################################################################################################
+FROM eclipse-temurin:17-jre-alpine-3.21
+
+WORKDIR /app
+# now default directory is /app so we can copy the app directly in the /app directory
+COPY --from=build /app/build/libs/*.jar app.jar
+RUN ls -la
+# expose the port
+EXPOSE 8080
+# limit min and max memory usage
+ENTRYPOINT ["java", "-Xms256m", "-Xmx512m", "-jar", "app.jar"]

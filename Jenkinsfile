@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HOST = "unix:///home/hack/.docker/desktop/docker.sock"
+        //DOCKER_HOST = "unix:///home/hack/.docker/desktop/docker.sock"
         APP_IMAGE = "spring-app:0.1"
         BDD_IMAGE = "bdd-test-spring-app:0.1"
         APP_CONTAINER = "spring-app-container"
